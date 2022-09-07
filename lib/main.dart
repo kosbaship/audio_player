@@ -1,10 +1,5 @@
-import 'dart:io';
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path_provider_android/path_provider_android.dart';
 
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -132,7 +127,8 @@ class DownLoadSongButtons extends StatelessWidget {
                       child: RawMaterialButton(
                           onPressed: progress != 0
                               ? null
-                              : () => downloadAndAddSongToPlaylistMp3(
+                              : () =>
+                                  _pageManager.downloadAndAddSongToPlaylistMp3(
                                     url: _url,
                                     fileName: "MantooQ_Audio_Book",
                                   ),
@@ -312,47 +308,6 @@ class Skip10SBackward extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-downloadAndAddSongToPlaylistMp3({required String url, String? fileName}) async {
-  final file = await downloadFile(url, fileName!);
-  if (file == null) return;
-  _pageManager.addSong(file.path);
-}
-
-Future<File?> downloadFile(String url, String name) async {
-  /// private storage not visible to the user
-  // final appStorage = await getApplicationDocumentsDirectory();
-  String? externalStorageDirPath;
-  if (Platform.isAndroid) {
-    try {
-      externalStorageDirPath = await PathProviderAndroid()
-          .getDownloadsPath(); //AndroidPathProvider.downloadsPath;
-    } catch (e) {
-      final directory = await getExternalStorageDirectory();
-      externalStorageDirPath = directory?.path;
-    }
-  }
-  final file = File("$externalStorageDirPath/$name.mp3");
-  try {
-    final response = await Dio().get(url,
-        options: Options(
-          responseType: ResponseType.bytes,
-          followRedirects: false,
-          receiveTimeout: 0,
-        ), onReceiveProgress: (received, total) {
-      _pageManager
-          .listenForDownloadProgress(((received / total) * 100).floor());
-    });
-
-    final raf = file.openSync(mode: FileMode.write);
-    raf.writeFromSync(response.data);
-    await raf.close();
-
-    return file;
-  } catch (e) {
-    return null;
   }
 }
 

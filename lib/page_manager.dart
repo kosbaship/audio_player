@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_android/path_provider_android.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'notifiers/download_progress_notifire.dart';
@@ -66,7 +71,7 @@ class PageManager {
     });
   }
 
-  void listenForDownloadProgress(int progress) {
+  void _listenForDownloadProgress(int progress) {
     downloadProgressNotifier.value = progress;
   }
 
@@ -198,7 +203,7 @@ class PageManager {
   //     final song = Uri.parse(
   //         "file:///storage/emulated/0/Download/MantooQ_Audio_Book.mp3");
   //     _playlist.add(AudioSource.uri(song, tag: 'Song $songNumber'));
-  void addSong(String downloadedFilePATH) async {
+  void _addSong(String downloadedFilePATH) async {
     final status = await Permission.storage.status;
     if (status != PermissionStatus.granted) {
       final result = await Permission.storage.request();
@@ -218,5 +223,46 @@ class PageManager {
     final index = _playlist.length - 1;
     if (index < 0) return;
     _playlist.removeAt(index);
+  }
+
+  downloadAndAddSongToPlaylistMp3(
+      {required String url, String? fileName}) async {
+    final file = await _downloadFile(url, fileName!);
+    if (file == null) return;
+    _addSong(file.path);
+  }
+
+  Future<File?> _downloadFile(String url, String name) async {
+    /// private storage not visible to the user
+    // final appStorage = await getApplicationDocumentsDirectory();
+    String? externalStorageDirPath;
+    if (Platform.isAndroid) {
+      try {
+        externalStorageDirPath = await PathProviderAndroid()
+            .getDownloadsPath(); //AndroidPathProvider.downloadsPath;
+      } catch (e) {
+        final directory = await getExternalStorageDirectory();
+        externalStorageDirPath = directory?.path;
+      }
+    }
+    final file = File("$externalStorageDirPath/$name.mp3");
+    try {
+      final response = await Dio().get(url,
+          options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            receiveTimeout: 0,
+          ), onReceiveProgress: (received, total) {
+        _listenForDownloadProgress(((received / total) * 100).floor());
+      });
+
+      final raf = file.openSync(mode: FileMode.write);
+      raf.writeFromSync(response.data);
+      await raf.close();
+
+      return file;
+    } catch (e) {
+      return null;
+    }
   }
 }
