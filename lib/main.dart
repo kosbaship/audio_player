@@ -129,7 +129,17 @@ class DownLoadSongButtons extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
-                      child: _buildActionForTask(progress),
+                      child: RawMaterialButton(
+                          onPressed: progress != 0
+                              ? null
+                              : () => downloadAndAddSongToPlaylistMp3(
+                                    url: _url,
+                                    fileName: "MantooQ_Audio_Book",
+                                  ),
+                          shape: const CircleBorder(),
+                          constraints: const BoxConstraints(
+                              minHeight: 32.0, minWidth: 32.0),
+                          child: _buildDownloadIcon(progress)),
                     ),
                   ],
                 ),
@@ -305,67 +315,6 @@ class Skip10SBackward extends StatelessWidget {
   }
 }
 
-Widget? _buildActionForTask(int progress) {
-  if (progress <= 0) {
-    return RawMaterialButton(
-      onPressed: () => downloadAndAddSongToPlaylistMp3(
-        url: _url,
-        fileName: "MantooQ_Audio_Book",
-      ),
-      shape: const CircleBorder(),
-      constraints: const BoxConstraints(minHeight: 32.0, minWidth: 32.0),
-      child: const Icon(Icons.file_download),
-    );
-  } else if (progress < 100) {
-    return const RawMaterialButton(
-      onPressed: null,
-      shape: CircleBorder(),
-      constraints: BoxConstraints(minHeight: 32.0, minWidth: 32.0),
-      child: Icon(
-        Icons.pause,
-        color: Colors.red,
-      ),
-    );
-  } else if (progress == 100) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        const Text(
-          'Ready',
-          style: TextStyle(color: Colors.green),
-        ),
-        RawMaterialButton(
-          onPressed: () {},
-          shape: const CircleBorder(),
-          constraints: const BoxConstraints(minHeight: 32.0, minWidth: 32.0),
-          child: const Icon(
-            Icons.delete_forever,
-            color: Colors.red,
-          ),
-        )
-      ],
-    );
-  } else {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        const Text('Failed', style: TextStyle(color: Colors.red)),
-        RawMaterialButton(
-          onPressed: () {},
-          shape: const CircleBorder(),
-          constraints: const BoxConstraints(minHeight: 32.0, minWidth: 32.0),
-          child: const Icon(
-            Icons.refresh,
-            color: Colors.green,
-          ),
-        )
-      ],
-    );
-  }
-}
-
 downloadAndAddSongToPlaylistMp3({required String url, String? fileName}) async {
   final file = await downloadFile(url, fileName!);
   if (file == null) return;
@@ -404,6 +353,25 @@ Future<File?> downloadFile(String url, String name) async {
     return file;
   } catch (e) {
     return null;
+  }
+}
+
+Icon _buildDownloadIcon(int progress) {
+  if (progress == 0) {
+    return const Icon(
+      Icons.file_download_outlined,
+      color: Colors.amber,
+    );
+  } else if (progress < 100) {
+    return const Icon(
+      Icons.file_download_off_outlined,
+      color: Colors.grey,
+    );
+  } else {
+    return const Icon(
+      Icons.file_download_done_outlined,
+      color: Colors.green,
+    );
   }
 }
 // class ShuffleButton extends StatelessWidget {
