@@ -13,6 +13,10 @@ dependencies:
   just_audio: ^0.9.28
   audio_video_progress_bar: ^0.10.0
   permission_handler: ^9.2.0
+  dio: ^4.0.4
+  path_provider_android: ^2.0.12
+  path_provider: ^2.0.9
+
 
 dev_dependencies:
   flutter_test:

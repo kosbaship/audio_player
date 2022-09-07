@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'notifiers/download_progress_notifire.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
@@ -10,6 +11,7 @@ class PageManager {
   final currentSongTitleNotifier = ValueNotifier<String>('');
   final playlistNotifier = ValueNotifier<List<String>>([]);
   final progressNotifier = ProgressNotifier();
+  final downloadProgressNotifier = DownloadProgressNotifier();
   final repeatButtonNotifier = RepeatButtonNotifier();
   final isFirstSongNotifier = ValueNotifier<bool>(true);
   final playButtonNotifier = PlayButtonNotifier();
@@ -62,6 +64,10 @@ class PageManager {
         _audioPlayer.pause();
       }
     });
+  }
+
+  void listenForDownloadProgress(int progress) {
+    downloadProgressNotifier.value = progress;
   }
 
   void _listenForChangesInPlayerPosition() {

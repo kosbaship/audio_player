@@ -1,9 +1,17 @@
+import 'dart:io';
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_android/path_provider_android.dart';
 
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'page_manager.dart';
+
+const _url =
+    "https://d2gu2d8i70fs54.cloudfront.net/65/a9cdcb2e3b4c3259a4f5ce212915a536362588fd/65/32/32_1.mp3?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMmd1MmQ4aTcwZnM1NC5jbG91ZGZyb250Lm5ldC82NS9hOWNkY2IyZTNiNGMzMjU5YTRmNWNlMjEyOTE1YTUzNjM2MjU4OGZkLzY1LzMyLzMyXzEubXAzIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNjU5NzA4Nzc4NjUzfX19XX0_&Key-Pair-Id=KU4Q284OJQ6A2&Signature=DqcGOzFg1y-5bE-~ZDM4~wKt9KbqQxt7VqIoFE~yupds2dewlhdGlz5uEBfIRVHYtmj2mF8KKJKXmWXCnFyiufpvnGNYx5UBb8XoYGhQ3c01PDnJwPuGWSeS~JzzRPG1dEI1XJvL4u87k6xomYj9otpVoakHa2On7IkSyJzIcjflK2aJmTuuSfVlaZ4URiNhxd9xZe7Of~6LL5pdcRxItDc~v5pG7i3ZTOU6BZv1AzXrISIx5SqHZMOvfONwbdxdieDXRrAN-LW3AaEpB9DP4JaOTvoJ47Ak0~u8HM0AcWyPwzKv8jiD8rTiIzErGAB2xJybcUAma4B8lPhZ5K6SpQ__";
 
 void main() => runApp(MyApp());
 
@@ -44,6 +52,7 @@ class _MyAppState extends State<MyApp> {
               CurrentSongTitle(),
               Playlist(),
               AddRemoveSongButtons(),
+              DownLoadSongButtons(),
               AudioProgressBar(),
               AudioControlButtons(),
             ],
@@ -114,6 +123,56 @@ class AddRemoveSongButtons extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class DownLoadSongButtons extends StatelessWidget {
+  const DownLoadSongButtons({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: _pageManager.downloadProgressNotifier,
+      builder: (_, progress, __) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 35),
+          width: double.infinity,
+          child: Stack(
+            children: <Widget>[
+              SizedBox(
+                width: double.infinity,
+                height: 85.0,
+                //  color: Colors.amber,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Please wait ($progress%)",
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: _buildActionForTask(progress),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 0.0,
+                right: 0.0,
+                bottom: 0.0,
+                child: LinearProgressIndicator(
+                  value: progress / 100,
+                  minHeight: 25,
+                ),
+              )
+              //: Container()
+            ].toList(),
+          ),
+        );
+      },
     );
   }
 }
@@ -299,6 +358,7 @@ class Skip10SBackward extends StatelessWidget {
     );
   }
 }
+
 // class ShuffleButton extends StatelessWidget {
 //   const ShuffleButton({Key? key}) : super(key: key);
 //   @override
@@ -316,3 +376,104 @@ class Skip10SBackward extends StatelessWidget {
 //     );
 //   }
 // }
+Widget? _buildActionForTask(int progress) {
+  if (progress <= 0) {
+    return RawMaterialButton(
+      onPressed: () => downloadAndAddSongToPlaylistMp3(
+        url: _url,
+        fileName: "MantooQ_Audio_Book",
+      ),
+      shape: const CircleBorder(),
+      constraints: const BoxConstraints(minHeight: 32.0, minWidth: 32.0),
+      child: const Icon(Icons.file_download),
+    );
+  } else if (progress < 100) {
+    return const RawMaterialButton(
+      onPressed: null,
+      shape: CircleBorder(),
+      constraints: BoxConstraints(minHeight: 32.0, minWidth: 32.0),
+      child: Icon(
+        Icons.pause,
+        color: Colors.red,
+      ),
+    );
+  } else if (progress == 100) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        const Text(
+          'Ready',
+          style: TextStyle(color: Colors.green),
+        ),
+        RawMaterialButton(
+          onPressed: () {},
+          shape: const CircleBorder(),
+          constraints: const BoxConstraints(minHeight: 32.0, minWidth: 32.0),
+          child: const Icon(
+            Icons.delete_forever,
+            color: Colors.red,
+          ),
+        )
+      ],
+    );
+  } else {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        const Text('Failed', style: TextStyle(color: Colors.red)),
+        RawMaterialButton(
+          onPressed: () {},
+          shape: const CircleBorder(),
+          constraints: const BoxConstraints(minHeight: 32.0, minWidth: 32.0),
+          child: const Icon(
+            Icons.refresh,
+            color: Colors.green,
+          ),
+        )
+      ],
+    );
+  }
+}
+
+downloadAndAddSongToPlaylistMp3({required String url, String? fileName}) async {
+  final file = await downloadFile(url, fileName!);
+  if (file == null) return;
+  _pageManager.addSong();
+}
+
+Future<File?> downloadFile(String url, String name) async {
+  /// private storage not visible to the user
+  // final appStorage = await getApplicationDocumentsDirectory();
+  String? externalStorageDirPath;
+  if (Platform.isAndroid) {
+    try {
+      externalStorageDirPath = await PathProviderAndroid()
+          .getDownloadsPath(); //AndroidPathProvider.downloadsPath;
+    } catch (e) {
+      final directory = await getExternalStorageDirectory();
+      externalStorageDirPath = directory?.path;
+    }
+  }
+  final file = File("$externalStorageDirPath/$name.mp3");
+  try {
+    final response = await Dio().get(url,
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+          receiveTimeout: 0,
+        ), onReceiveProgress: (received, total) {
+      _pageManager
+          .listenForDownloadProgress(((received / total) * 100).floor());
+    });
+
+    final raf = file.openSync(mode: FileMode.write);
+    raf.writeFromSync(response.data);
+    await raf.close();
+
+    return file;
+  } catch (e) {
+    return null;
+  }
+}
