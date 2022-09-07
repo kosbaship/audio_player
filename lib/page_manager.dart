@@ -185,6 +185,19 @@ class PageManager {
     await _audioPlayer.setShuffleModeEnabled(enable);
   }
 
+  //     final songNumber = _playlist.length + 1;
+  //     // const prefix = 'https://www.soundhelix.com/examples/mp3';
+  //     // final song = Uri.parse('$prefix/SoundHelix-Song-$songNumber.mp3');
+  //     // final song = Uri.parse(
+  //     //     'file:///storage/emulated/0/Android/data/dev.suragch.audio_playlist_flutter_demo/files/MantooQ_Audio_Book.mp3');
+  //     log('''
+  //     Downloaded File PATH
+  //     $downloadedFilePATH
+  //     ''');
+  //     // final song = Uri.parse("file://$downloadedFilePATH");
+  //     final song = Uri.parse(
+  //         "file:///storage/emulated/0/Download/MantooQ_Audio_Book.mp3");
+  //     _playlist.add(AudioSource.uri(song, tag: 'Song $songNumber'));
   void addSong() async {
     final status = await Permission.storage.status;
     if (status != PermissionStatus.granted) {
