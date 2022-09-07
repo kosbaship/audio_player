@@ -198,24 +198,18 @@ class PageManager {
   //     final song = Uri.parse(
   //         "file:///storage/emulated/0/Download/MantooQ_Audio_Book.mp3");
   //     _playlist.add(AudioSource.uri(song, tag: 'Song $songNumber'));
-  void addSong() async {
+  void addSong(String downloadedFilePATH) async {
     final status = await Permission.storage.status;
     if (status != PermissionStatus.granted) {
       final result = await Permission.storage.request();
       if (result == PermissionStatus.granted) {
         final songNumber = _playlist.length + 1;
-        // const prefix = 'https://www.soundhelix.com/examples/mp3';
-        // final song = Uri.parse('$prefix/SoundHelix-Song-$songNumber.mp3');
-        final song = Uri.parse(
-            "file:///storage/emulated/0/Download/MantooQ_Audio_Book.mp3");
+        final song = Uri.parse("file://$downloadedFilePATH");
         _playlist.add(AudioSource.uri(song, tag: 'Song $songNumber'));
       }
     } else {
       final songNumber = _playlist.length + 1;
-      // const prefix = 'https://www.soundhelix.com/examples/mp3';
-      // final song = Uri.parse('$prefix/SoundHelix-Song-$songNumber.mp3');
-      final song = Uri.parse(
-          "file:///storage/emulated/0/Download/MantooQ_Audio_Book.mp3");
+      final song = Uri.parse("file://$downloadedFilePATH");
       _playlist.add(AudioSource.uri(song, tag: 'Song $songNumber'));
     }
   }

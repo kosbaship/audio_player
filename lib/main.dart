@@ -318,7 +318,7 @@ class Skip10SBackward extends StatelessWidget {
 downloadAndAddSongToPlaylistMp3({required String url, String? fileName}) async {
   final file = await downloadFile(url, fileName!);
   if (file == null) return;
-  _pageManager.addSong();
+  _pageManager.addSong(file.path);
 }
 
 Future<File?> downloadFile(String url, String name) async {
