@@ -51,7 +51,6 @@ class _MyAppState extends State<MyApp> {
             children: [
               CurrentSongTitle(),
               Playlist(),
-              AddRemoveSongButtons(),
               DownLoadSongButtons(),
               AudioProgressBar(),
               AudioControlButtons(),
@@ -98,30 +97,6 @@ class Playlist extends StatelessWidget {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class AddRemoveSongButtons extends StatelessWidget {
-  const AddRemoveSongButtons({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          FloatingActionButton(
-            onPressed: _pageManager.addSong,
-            child: Icon(Icons.add),
-          ),
-          FloatingActionButton(
-            onPressed: _pageManager.removeSong,
-            child: Icon(Icons.remove),
-          ),
-        ],
       ),
     );
   }
@@ -216,35 +191,6 @@ class AudioControlButtons extends StatelessWidget {
     );
   }
 }
-
-// class RepeatButton extends StatelessWidget {
-//   const RepeatButton({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ValueListenableBuilder<RepeatState>(
-//       valueListenable: _pageManager.repeatButtonNotifier,
-//       builder: (context, value, child) {
-//         Icon icon;
-//         switch (value) {
-//           case RepeatState.off:
-//             icon = Icon(Icons.repeat, color: Colors.grey);
-//             break;
-//           case RepeatState.repeatSong:
-//             icon = Icon(Icons.repeat_one);
-//             break;
-//           case RepeatState.repeatPlaylist:
-//             icon = Icon(Icons.repeat);
-//             break;
-//         }
-//         return IconButton(
-//           icon: icon,
-//           onPressed: _pageManager.onRepeatButtonPressed,
-//         );
-//       },
-//     );
-//   }
-// }
 
 class PreviousSongButton extends StatelessWidget {
   const PreviousSongButton({Key? key}) : super(key: key);
@@ -359,23 +305,6 @@ class Skip10SBackward extends StatelessWidget {
   }
 }
 
-// class ShuffleButton extends StatelessWidget {
-//   const ShuffleButton({Key? key}) : super(key: key);
-//   @override
-//   Widget build(BuildContext context) {
-//     return ValueListenableBuilder<bool>(
-//       valueListenable: _pageManager.isShuffleModeEnabledNotifier,
-//       builder: (context, isEnabled, child) {
-//         return IconButton(
-//           icon: (isEnabled)
-//               ? Icon(Icons.shuffle)
-//               : Icon(Icons.shuffle, color: Colors.grey),
-//           onPressed: _pageManager.onShuffleButtonPressed,
-//         );
-//       },
-//     );
-//   }
-// }
 Widget? _buildActionForTask(int progress) {
   if (progress <= 0) {
     return RawMaterialButton(
@@ -477,3 +406,71 @@ Future<File?> downloadFile(String url, String name) async {
     return null;
   }
 }
+// class ShuffleButton extends StatelessWidget {
+//   const ShuffleButton({Key? key}) : super(key: key);
+//   @override
+//   Widget build(BuildContext context) {
+//     return ValueListenableBuilder<bool>(
+//       valueListenable: _pageManager.isShuffleModeEnabledNotifier,
+//       builder: (context, isEnabled, child) {
+//         return IconButton(
+//           icon: (isEnabled)
+//               ? Icon(Icons.shuffle)
+//               : Icon(Icons.shuffle, color: Colors.grey),
+//           onPressed: _pageManager.onShuffleButtonPressed,
+//         );
+//       },
+//     );
+//   }
+// }
+// class RepeatButton extends StatelessWidget {
+//   const RepeatButton({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return ValueListenableBuilder<RepeatState>(
+//       valueListenable: _pageManager.repeatButtonNotifier,
+//       builder: (context, value, child) {
+//         Icon icon;
+//         switch (value) {
+//           case RepeatState.off:
+//             icon = Icon(Icons.repeat, color: Colors.grey);
+//             break;
+//           case RepeatState.repeatSong:
+//             icon = Icon(Icons.repeat_one);
+//             break;
+//           case RepeatState.repeatPlaylist:
+//             icon = Icon(Icons.repeat);
+//             break;
+//         }
+//         return IconButton(
+//           icon: icon,
+//           onPressed: _pageManager.onRepeatButtonPressed,
+//         );
+//       },
+//     );
+//   }
+// }
+// class AddRemoveSongButtons extends StatelessWidget {
+//   const AddRemoveSongButtons({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 20.0),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//         children: [
+//           FloatingActionButton(
+//             onPressed: _pageManager.addSong,
+//             child: Icon(Icons.add),
+//           ),
+//           FloatingActionButton(
+//             onPressed: _pageManager.removeSong,
+//             child: Icon(Icons.remove),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
